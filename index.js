@@ -1,4 +1,3 @@
-
 const express = require('express')
 const morgan = require('morgan')
 const cors = require('cors')
@@ -111,8 +110,8 @@ app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
   const person = {
-    name: body.name,
-    number: body.number,
+    name: name,
+    number: number,
   }
 
   Person.findByIdAndUpdate(
