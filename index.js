@@ -21,7 +21,6 @@ const errorHandler = (error, request, response, next) => {
   } else if (error.name === 'ValidationError') {
     return response.status(400).json({ error: error.message })
   }
-  
   next(error)
 }
 
@@ -57,7 +56,7 @@ app.post('/api/persons', (request, response, next) => {
   const { name, number } = request.body
 
   if (!name || !number) {
-    return response.status(400).json({ 
+    return response.status(400).json({
       error: 'The name or number is missing'
     })
   }
@@ -65,7 +64,7 @@ app.post('/api/persons', (request, response, next) => {
   Person.findOne({ name: name })
     .then(existingPerson => {
       if (existingPerson) {
-        return response.status(400).json({ 
+        return response.status(400).json({
           error: 'The name already exists in the phonebook'
         })
       }
@@ -85,48 +84,40 @@ app.post('/api/persons', (request, response, next) => {
 
 app.get('/api/persons/:id', (request, response, next) => {
   Person.findById(request.params.id)
-  .then(person => {
-    if (person) {
-      response.json(person)
-    } else {
-      response.status(404).json({ error: 'Person not found' })
-    }
-  })
-  .catch(error => next(error))
+    .then(person => {
+      if (person) {
+        response.json(person)
+      } else {
+        response.status(404).json({ error: 'Person not found' })
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.delete('/api/persons/:id', (request, response, next) => {
-  // const id = request.params.id
-  // persons = persons.filter(person => person.id !== id)
-
   Person.findByIdAndDelete(request.params.id)
-  .then(result => {
-    response.status(204).end()
-  })
-  .catch(error => next(error))
+    .then(() => {
+      response.status(204).end()
+    })
+    .catch(error => next(error))
 })
 
 app.put('/api/persons/:id', (request, response, next) => {
   const { name, number } = request.body
 
-  const person = {
-    name: name,
-    number: number,
-  }
-
   Person.findByIdAndUpdate(
-    request.params.id, 
+    request.params.id,
     { name, number },
     { new: true, runValidators: true, context: 'query' }
   )
-  .then(updatedPerson => {
-    if (updatedPerson) {
-      response.json(updatedPerson)
-    } else {
-      response.status(404).end()
-    }
-  })
-  .catch(error => next(error))
+    .then(updatedPerson => {
+      if (updatedPerson) {
+        response.json(updatedPerson)
+      } else {
+        response.status(404).end()
+      }
+    })
+    .catch(error => next(error))
 })
 
 app.use(unknownEndpoint)
